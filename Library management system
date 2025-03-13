@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100  
+
+struct Node {
+    int data;
+    struct Node* next;
+};
+
+struct Graph {
+    int vertices;
+    struct Node* adjList[MAX];
+    int visited[MAX];  
+};
+
+struct Graph* createGraph(int vertices) {
+    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
+    graph->vertices = vertices;
+    
+    for (int i = 0; i < vertices; i++) {
+        graph->adjList[i] = NULL;
+        graph->visited[i] = 0;
+    }
+    return graph;
+}
+
+struct Node* createNode(int value) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    return newNode;
+}
+
+void addEdge(struct Graph* graph, int src, int dest) {
+    struct Node* newNode = createNode(dest);
+    newNode->next = graph->adjList[src];
+    graph->adjList[src] = newNode;
+
+    newNode = createNode(src);
+    newNode->next = graph->adjList[dest];
+    graph->adjList[dest] = newNode;
+}
+
+void dfs(struct Graph* graph, int vertex) {
+    graph->visited[vertex] = 1;
+    printf("%d ", vertex);
+
+    struct Node* temp = graph->adjList[vertex];
+    while (temp) {
+        int adjVertex = temp->data;
+        if (!graph->visited[adjVertex]) {
+            dfs(graph, adjVertex);
+        }
+        temp = temp->next;
+    }
+}
+
+int main() {
+    int vertices, edges, src, dest, startVertex;
+    
+    printf("Enter the number of vertices: ");
+    scanf("%d", &vertices);
+    
+    struct Graph* graph = createGraph(vertices);
+
+    printf("Enter the number of edges: ");
+    scanf("%d", &edges);
+
+    printf("Enter the edges (src dest format):\n");
+    for (int i = 0; i < edges; i++) {
+        scanf("%d %d", &src, &dest);
+        addEdge(graph, src, dest);
+    }
+
+    printf("Enter the starting vertex for DFS: ");
+    scanf("%d", &startVertex);
+
+    printf("DFS Traversal: ");
+    dfs(graph, startVertex);
+    printf("\n");
+
+    return 0;
+}
